@@ -59,6 +59,8 @@ class Product:
 - {self.rel_discount:.2f}% de descuento relativo.
 - {self.url}
 '''
+        else:
+            return self.hero
 
 
 class User:
