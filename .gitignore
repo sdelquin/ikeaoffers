@@ -1,2 +1,4 @@
 .python-version
 *.pyc
+config.yaml
+.env

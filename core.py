@@ -1,5 +1,8 @@
 import requests
+import yaml
 from bs4 import BeautifulSoup
+
+import settings
 
 
 class Product:
@@ -34,3 +37,25 @@ class Product:
     @property
     def rel_discount(self) -> float:
         return self.abs_discount / self.original_price * 100
+
+
+class User:
+    def __init__(self, name: str, email: str):
+        self.name = name
+        self.email = email
+
+    def handle_product(self, product: Product):
+        if product.is_offer:
+            pass
+
+
+class IkeaOffers:
+    def __init__(self, config_path: str = settings.CONFIG_PATH):
+        self.config = yaml.load(open(config_path), Loader=yaml.FullLoader)
+
+    def run(self):
+        for user_cfg in self.config['users']:
+            user = User(user_cfg['name'], user_cfg['email'])
+            for product_url in user_cfg['track']:
+                product = Product(product_url)
+                user.handle_product(product)
