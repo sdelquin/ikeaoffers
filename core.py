@@ -1,6 +1,7 @@
 import requests
 import yaml
 from bs4 import BeautifulSoup
+from sendgrify import SendGrid
 
 import settings
 
@@ -38,18 +39,44 @@ class Product:
     def rel_discount(self) -> float:
         return self.abs_discount / self.original_price * 100
 
+    @property
+    def title(self) -> str:
+        title_ = self.name
+        if self.is_offer:
+            title_ += ' en oferta'
+        return title_
+
+    @property
+    def hero(self) -> str:
+        return f'{self.name} ({self.description})'
+
+    def __str__(self):
+        if self.is_offer:
+            return f'''**¡{self.hero} en oferta!**
+
+- {self.original_price}€ ↘️ **{self.offer_price}€**
+- {self.abs_discount}€ de descuento absoluto.
+- {self.rel_discount:.2f}% de descuento relativo.
+- {self.url}
+'''
+
 
 class User:
     def __init__(self, name: str, email: str):
         self.name = name
         self.email = email
+        self.sg = SendGrid(
+            settings.SENDGRID_APIKEY,
+            settings.NOTIFICATION_FROM_ADDR,
+            settings.NOTIFICATION_FROM_NAME,
+        )
 
     def handle_product(self, product: Product):
         if product.is_offer:
-            pass
+            self.sg.send(to=self.email, subject=product.title, msg=str(product), as_markdown=True)
 
 
-class IkeaOffers:
+class IKEAOffers:
     def __init__(self, config_path: str = settings.CONFIG_PATH):
         self.config = yaml.load(open(config_path), Loader=yaml.FullLoader)
 

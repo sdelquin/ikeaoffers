@@ -1,4 +1,4 @@
-from core import IkeaOffers
+from core import IKEAOffers
 
-app = IkeaOffers()
+app = IKEAOffers()
 app.run()
