@@ -5,8 +5,8 @@ import logzero
 import typer
 
 import settings
-from core import IKEAOffers
-from utils import init_logger
+from lib.core import IKEAOffers
+from lib.utils import init_logger
 
 app = typer.Typer(add_completion=False)
 logger = init_logger()
