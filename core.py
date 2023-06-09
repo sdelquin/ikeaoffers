@@ -36,7 +36,7 @@ class Product:
             old_value = item_info.find('span', class_='oldValue')
             self.original_price = float(old_value.contents[0])
         else:
-            logger.info('⭕ Product normal price')
+            logger.info('== Product normal price')
             item_price = item_info.find('p', class_='itemPrice')
             self.original_price = float(item_price.span.contents[0])
             self.offer_price = self.original_price
@@ -161,6 +161,10 @@ class IKEAOffers:
         for user_cfg in self.config['users']:
             user = User(user_cfg['name'], user_cfg['email'])
             for product_url in user_cfg['track']:
-                product = Product(product_url)
-                tracking = Tracking(user, product)
-                tracking.dispatch()
+                try:
+                    product = Product(product_url)
+                    tracking = Tracking(user, product)
+                except Exception as err:
+                    logger.error(err)
+                else:
+                    tracking.dispatch()
