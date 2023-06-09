@@ -36,9 +36,9 @@ class Product:
             old_value = item_info.find('span', class_='oldValue')
             self.original_price = float(old_value.contents[0])
         else:
-            logger.info('Product normal price')
-            item_price = item_info.find('p', class_='itemNormalPrice')
-            self.original_price = float(item_price.span['data-price'])
+            logger.info('⭕ Product normal price')
+            item_price = item_info.find('p', class_='itemPrice')
+            self.original_price = float(item_price.span.contents[0])
             self.offer_price = self.original_price
 
     @property
