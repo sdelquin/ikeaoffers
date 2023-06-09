@@ -4,3 +4,4 @@ sendgrify
 prettyconf
 pyyaml
 logzero
+typer
