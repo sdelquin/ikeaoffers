@@ -118,7 +118,7 @@ class Tracking:
         del self.deliveries[self.tagline]
 
     def notify(self):
-        self.info(f'Notifying {self}')
+        logger.info(f'Notifying {self}')
         self.sg.send(
             to=self.user.email,
             subject=self.product.title,
