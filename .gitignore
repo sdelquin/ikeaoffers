@@ -2,5 +2,5 @@
 *.pyc
 config.yaml
 .env
-tracking.dbm
+tracking.dbm*
 *.log
