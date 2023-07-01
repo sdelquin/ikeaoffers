@@ -74,7 +74,7 @@ class Product:
 
 - {self.original_price:.02f}€ ↘️ **{self.offer_price}€**
 - {self.abs_discount:.02f}€ de descuento absoluto.
-- {self.rel_discount:.02f}% de descuento relativo.
+- {self.rel_discount:.0f}% aprox. de descuento relativo.
 - {self.url}
 '''
         else:
