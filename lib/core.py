@@ -157,7 +157,7 @@ class IKEAOffers:
     def __init__(self, config_path: str = settings.CONFIG_PATH):
         self.config = yaml.load(open(config_path), Loader=yaml.FullLoader)
 
-    def run(self):
+        self.trackings = []
         for user_cfg in self.config['users']:
             user = User(user_cfg['name'], user_cfg['email'])
             for product_url in user_cfg['track']:
@@ -167,4 +167,16 @@ class IKEAOffers:
                 except Exception as err:
                     logger.error(err)
                 else:
-                    tracking.dispatch()
+                    self.trackings.append(tracking)
+
+    def dispatch(self):
+        for tracking in self.trackings:
+            tracking.dispatch()
+
+    def clean_orphan_deliveries(self):
+        for delivery in Tracking.deliveries:
+            for tracking in self.trackings:
+                if delivery == tracking.tagline:
+                    logger.info(f'✗ Delivery "{delivery}" is orphan. Deleting')
+                    del Tracking.deliveries[delivery]
+                    break
