@@ -68,7 +68,7 @@ class Product:
         return self.hero
 
     @property
-    def template(self):
+    def template(self) -> str:
         if self.is_offer:
             return f'''**¡{self.hero} en oferta!**
 
@@ -105,7 +105,7 @@ class Tracking:
         self.product = product
 
     @property
-    def tagline(self):
+    def tagline(self) -> str:
         return f'{self.user.email}:{self.product.id}'
 
     def load(self) -> int | None:
@@ -117,7 +117,7 @@ class Tracking:
     def remove(self) -> None:
         del self.deliveries[self.tagline]
 
-    def notify(self):
+    def notify(self) -> None:
         logger.info(f'Notifying {self}')
         self.sg.send(
             to=self.user.email,
@@ -126,7 +126,7 @@ class Tracking:
             as_markdown=True,
         )
 
-    def dispatch(self):
+    def dispatch(self) -> None:
         logger.info(f'Dispatching tracking {self}')
         notify = False
         if self.product.is_offer:
@@ -146,7 +146,7 @@ class Tracking:
             self.remove()
 
     @property
-    def notified(self):
+    def notified(self) -> bool:
         return self.tagline in self.deliveries
 
     def __str__(self):
@@ -169,11 +169,11 @@ class IKEAOffers:
                 else:
                     self.trackings.append(tracking)
 
-    def dispatch(self):
+    def dispatch(self) -> None:
         for tracking in self.trackings:
             tracking.dispatch()
 
-    def clean_orphan_deliveries(self):
+    def clean_orphan_deliveries(self) -> None:
         for delivery in Tracking.deliveries:
             for tracking in self.trackings:
                 if delivery == tracking.tagline:
