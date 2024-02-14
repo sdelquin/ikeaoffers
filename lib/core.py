@@ -21,7 +21,8 @@ class Product:
             logger.error(f'Product url "{self.url}" does not include an id')
 
         logger.debug('Requesting data from url')
-        response = requests.get(product_url)
+        # https://stackoverflow.com/a/75646345
+        response = requests.get(product_url, verify=settings.IKEA_SSL_CERT_PATH)
         soup = BeautifulSoup(response.content, 'html.parser')
 
         item_info = soup.find('div', class_='itemInfo')
@@ -30,16 +31,15 @@ class Product:
         item_facts = item_info.find('div', class_='itemFacts')
         self.description = ' '.join(item_facts.stripped_strings)
 
-        if item_offer := item_info.find('p', class_='itemOfferPrice'):
+        item_price = item_info.find('p', class_='itemPrice')
+        self.offer_price = float(item_price.span.contents[0])
+
+        if old_item_price := item_info.find('span', class_='oldValue'):
             logger.info(f'✨ Product {self.name} includes an offer!')
-            self.offer_price = float(item_offer['data-price'])
-            old_value = item_info.find('span', class_='oldValue')
-            self.original_price = float(old_value.contents[0])
+            self.original_price = float(old_item_price.contents[0])
         else:
             logger.info('== Product normal price')
-            item_price = item_info.find('p', class_='itemPrice')
-            self.original_price = float(item_price.span.contents[0])
-            self.offer_price = self.original_price
+            self.original_price = self.offer_price
 
     @property
     def is_offer(self) -> bool:
@@ -70,13 +70,13 @@ class Product:
     @property
     def template(self) -> str:
         if self.is_offer:
-            return f'''**¡{self.hero} en oferta!**
+            return f"""**¡{self.hero} en oferta!**
 
-- {self.original_price:.02f}€ ↘️ **{self.offer_price}€**
+- {self.original_price:.02f}€ ↘️ **{self.offer_price:.02f}€**
 - {self.abs_discount:.02f}€ de descuento absoluto.
 - {self.rel_discount:.0f}% aprox. de descuento relativo.
 - {self.url}
-'''
+"""
         else:
             return f'{self.hero} a precio normal'
 
