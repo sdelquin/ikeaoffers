@@ -155,28 +155,32 @@ class Tracking:
 
 class IKEAOffers:
     def __init__(self, config_path: str = settings.CONFIG_PATH):
+        logger.info(f'🔄 Loading configuration from {config_path}')
         self.config = yaml.load(open(config_path), Loader=yaml.FullLoader)
 
-        self.trackings = []
+    def dispatch(self) -> None:
         for user_cfg in self.config['users']:
             user = User(user_cfg['name'], user_cfg['email'])
             for product_url in user_cfg['track']:
                 try:
                     product = Product(product_url)
-                    tracking = Tracking(user, product)
                 except Exception as err:
                     logger.error(err)
-                else:
-                    self.trackings.append(tracking)
-
-    def dispatch(self) -> None:
-        for tracking in self.trackings:
-            tracking.dispatch()
+                tracking = Tracking(user, product)
+                tracking.dispatch()
 
     def clean_orphan_deliveries(self) -> None:
+        logger.info('🧽 Cleaning orphan deliveries')
         for delivery in Tracking.deliveries:
-            for tracking in self.trackings:
-                if delivery == tracking.tagline:
-                    logger.info(f'✗ Delivery "{delivery}" is orphan. Deleting')
-                    del Tracking.deliveries[delivery]
+            found = False
+            for user_cfg in self.config['users']:
+                for product_url in user_cfg['track']:
+                    tracking_id = f'{user_cfg['email']}:{product_url}'
+                    if delivery == tracking_id:
+                        found = True
+                        break
+                if found:
                     break
+            if not found:
+                logger.info(f'❌ Delivery "{delivery}" is orphan. Deleting')
+                del Tracking.deliveries[delivery]
