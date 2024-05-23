@@ -3,5 +3,5 @@
 config.yaml
 .env
 tracking.dbm*
-*.log
+*.log*
 .DS_Store
