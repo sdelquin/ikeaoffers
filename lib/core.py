@@ -25,13 +25,13 @@ class Product:
         response = requests.get(product_url, verify=settings.IKEA_SSL_CERT_PATH)
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        item_info = soup.find('div', class_='itemInfo')
+        item_info = soup.find('div', class_='itemInfo-PIP')
         item_title = item_info.find('div', class_='itemTitle')
-        self.name = item_title.h6.text.strip()
+        self.name = item_title.text.strip()
         item_facts = item_info.find('div', class_='itemFacts')
         self.description = ' '.join(item_facts.stripped_strings)
 
-        item_price = item_info.find('p', class_='itemPrice')
+        item_price = item_info.find('div', class_='itemPrice')
         self.offer_price = float(item_price.span.contents[0])
 
         if old_item_price := item_info.find('span', class_='oldValue'):
