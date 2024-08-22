@@ -31,7 +31,7 @@ class Product:
         item_facts = item_info.find('div', class_='itemFacts')
         self.description = ' '.join(item_facts.stripped_strings)
 
-        item_price = item_info.find('div', class_='itemPrice')
+        item_price = item_info.find(class_='itemPrice')
         self.offer_price = float(item_price.span.contents[0])
 
         if old_item_price := item_info.find('span', class_='oldValue'):
