@@ -27,14 +27,14 @@ def dispatch(
         'DEBUG', '--loglevel', '-l', help='Log level (debug, info, error)'
     ),
 ):
-    '''Check for IKEA offers and notify users.'''
+    """Check for IKEA offers and notify users."""
     offers = IKEAOffers()
     offers.dispatch()
 
 
 @app.command()
 def clean_db():
-    '''Clean tracking database.'''
+    """Clean tracking database."""
     if typer.confirm('Are you sure to delete tracking database?'):
         for file_path in glob.glob(settings.STORAGE_PATH + '*'):
             os.remove(file_path)
@@ -42,10 +42,10 @@ def clean_db():
 
 @app.command()
 def clean_orphan_deliveries():
-    '''Clean orphan deliveries.'''
+    """Clean orphan deliveries."""
     offers = IKEAOffers()
     offers.clean_orphan_deliveries()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app()
